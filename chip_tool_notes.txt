@@ -1,0 +1,87 @@
+Clear-RecycleBin -DriveLetter C -Force
+Get-PSDrive C
+
+nmcli dev wifi list
+nmcli device status
+
+nmcli device wifi rescan ifname wlxd85d4c9077df
+nmcli device wifi list ifname wlxd85d4c9077df
+sudo nmcli device wifi connect "Sawlan0" password "ylub8733" ifname wlxd85d4c9077df
+nmcli device status
+nmcli -p device show wlxd85d4c9077df
+
+nmcli connection show "Sawlan0 1"
+nmcli connection show
+sudo nmcli connection delete id "Sawlan0 1"
+sudo nmcli device wifi connect "Sawlan0" password "ylub8733" ifname wlxd85d4c9077df
+nmcli device status
+
+systemctl status bluetooth avahi-daemon --no-pager
+
+bluetoothctl show
+lsusb
+lsusb -t
+bluetoothctl list
+hciconfig -a
+
+sudo systemctl enable --now bluetooth
+sudo systemctl enable --now avahi-daemon
+bluetoothctl show
+bluetoothctl power on
+
+sudo apt install avahi-daemon
+
+snap install chip-tool
+
+sudo kill -9 $(pgrep -f chip) 2>/dev/null
+sudo systemctl daemon-reload
+sudo systemctl restart bluetooth
+sudo rm -f /root/snap/chip-tool/common/chip_tool_kvs
+sudo rm -rf /tmp/chip_*
+
+bluetoothctl show
+ip -4 addr show wlxd85d4c9077df
+nmcli connection down "Sawlan0 1"
+nmcli connection up "Sawlan0 1" ifname wlxd85d4c9077df
+
+sudo chip-tool pairing ble-wifi 1 "Sawlan0" "ylub8733" 93590231 3341 --bypass-attestation-verifier true
+
+sudo apt install avahi-utils
+avahi-browse -rt _matterc._udp
+
+sudo chip-tool interactive start
+onoff on 1 1
+onoff off 1 1
+onoff read on-off 1 1
+
+sudo apt install python3.12-venv
+mkdir ~/chiptoolserver
+cd ~/chiptoolserver
+python3 -m venv chiptoolserver
+source chiptoolserver/bin/activate
+pip install flask waitress pexpect
+
+sudo -v
+while true; do sudo -n -v; sleep 600; done &
+
+sudo /home/subtali/chiptoolserver/chiptoolserver/bin/python p110mcontrol.py \
+--node-id 1 \
+--endpoint-id 1 \
+--listen-host 127.0.0.1 \
+--listen-port 8080
+
+ss -ltn | grep 8080
+
+ssh -N \
+-o ExitOnForwardFailure=yes \
+-o ServerAliveInterval=30 \
+-o ServerAliveCountMax=3 \
+-L 127.0.0.1:18080:127.0.0.1:8080 \
+subtali@meeln039
+
+netstat -ano | findstr :18080
+
+curl -sS -X POST http://127.0.0.1:18080/plug/status
+curl -sS -X POST http://127.0.0.1:18080/plug/off
+curl -sS -X POST http://127.0.0.1:18080/plug/on
+
